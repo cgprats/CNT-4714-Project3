@@ -6,8 +6,11 @@
     Class: SQLClient
  */
 import java.sql.*;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.crypto.Data;
+import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +38,12 @@ public class SQLClient {
     String sqlCommand;
     String username;
     String password;
+    int selectedDriver;
+    String selectedDriverStr;
+    int selectedDatabase;
+    String selectedDatabaseStr;
+    Connection connection;
+    DatabaseMetaData dbMetaData;
 
     public SQLClient() {
         DriverBox.addItem("");
@@ -44,26 +53,42 @@ public class SQLClient {
             public void actionPerformed(ActionEvent e) {
                 username = UsernameField.getText();
                 password = String.valueOf(PasswordField.getPassword());
-                System.out.println(username + " " + password);
+                switch (selectedDriver) {
+                    case 0:
+                        break;
+                    case 1:
+                        try {
+                            Class.forName("com.mysql.cj.jdbc.Driver");
+                        } catch (ClassNotFoundException classNotFoundException) {
+                            classNotFoundException.printStackTrace();
+                        }
+                        try {
+                            connection = DriverManager.getConnection(selectedDatabaseStr, username, password);
+                            dbMetaData = connection.getMetaData();
+                        } catch (SQLException throwables) {
+                            throwables.printStackTrace();
+                        }
+                        break;
+                }
             }
         });
         ClearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                SQLTextArea.setText("");
             }
         });
         ExecuteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                sqlCommand = SQLTextArea.getText() + ";";
             }
         });
         DriverBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedDriver = DriverBox.getSelectedIndex();
-                String selectedDriverStr = DriverBox.getSelectedItem().toString();
+                selectedDriver = DriverBox.getSelectedIndex();
+                selectedDriverStr = DriverBox.getSelectedItem().toString();
                 switch (selectedDriver) {
                     case 0:
                         DatabaseBox.removeAllItems();
@@ -74,6 +99,9 @@ public class SQLClient {
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/project3?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/bikedb?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/testdb?useTimezone=true&serverTimezone=UTC");
+                        DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/project3?useTimezone=true&serverTimezone=UTC");
+                        DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/bikedb?useTimezone=true&serverTimezone=UTC");
+                        DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/testdb?useTimezone=true&serverTimezone=UTC");
                         break;
                 }
             }
@@ -81,14 +109,14 @@ public class SQLClient {
         DatabaseBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedDatabase = DatabaseBox.getSelectedIndex();
-                String selectedDatabaseStr = DatabaseBox.getSelectedItem().toString();
+                selectedDatabase = DatabaseBox.getSelectedIndex();
+                selectedDatabaseStr = DatabaseBox.getSelectedItem().toString();
             }
         });
         ClearResult.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                ResultTable.setModel(new DefaultTableModel());
             }
         });
     }
