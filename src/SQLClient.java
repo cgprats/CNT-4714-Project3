@@ -5,6 +5,7 @@
     Date: November 1,2020
     Class: SQLClient
  */
+import java.sql.*;
 import javax.swing.*;
 import javax.xml.crypto.Data;
 import java.awt.*;
@@ -31,16 +32,19 @@ public class SQLClient {
     private JComboBox DriverBox;
     private JTable ResultTable;
     private JButton ClearResult;
+    String sqlCommand;
+    String username;
+    String password;
 
     public SQLClient() {
-        String sqlCommand;
-        String username;
-        String password;
         DriverBox.addItem("");
         DriverBox.addItem("com.mysql.cj.jdbc.Driver");
         ConnectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                username = UsernameField.getText();
+                password = String.valueOf(PasswordField.getPassword());
+                System.out.println(username + " " + password);
             }
         });
         ClearButton.addActionListener(new ActionListener() {
