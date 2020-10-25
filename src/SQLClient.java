@@ -44,6 +44,8 @@ public class SQLClient {
     String selectedDatabaseStr;
     Connection connection;
     DatabaseMetaData dbMetaData;
+    Statement statement;
+    ResultSet resultSet;
 
     public SQLClient() {
         DriverBox.addItem("");
@@ -64,7 +66,6 @@ public class SQLClient {
                         }
                         try {
                             connection = DriverManager.getConnection(selectedDatabaseStr, username, password);
-                            dbMetaData = connection.getMetaData();
                         } catch (SQLException throwables) {
                             throwables.printStackTrace();
                         }
@@ -81,7 +82,14 @@ public class SQLClient {
         ExecuteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sqlCommand = SQLTextArea.getText() + ";";
+                sqlCommand = SQLTextArea.getText();
+                try {
+                    dbMetaData = connection.getMetaData();
+                    statement = connection.createStatement();
+                    resultSet = statement.executeQuery(sqlCommand);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
         DriverBox.addActionListener(new ActionListener() {
