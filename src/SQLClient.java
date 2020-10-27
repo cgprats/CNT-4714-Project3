@@ -99,8 +99,9 @@ public class SQLClient {
                     sqlQueryResultTable = new QueryResultTable(connection, statement, resultSet, resultSetMetaData);
                     ResultTable = new JTable(sqlQueryResultTable);
                     ResultTable.setGridColor(Color.BLACK);
-                    TablePane = new JScrollPane(ResultTable);
-                    JOptionPane.showMessageDialog(null, new JScrollPane(ResultTable));
+                    ResultTable.setVisible(true);
+                    ResultTable.setFillsViewportHeight(true);
+                    TablePane.setViewportView(ResultTable);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     JOptionPane.showMessageDialog(null, throwables.getMessage(), "Database error", JOptionPane.ERROR_MESSAGE);
