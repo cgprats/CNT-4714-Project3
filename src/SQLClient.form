@@ -62,7 +62,9 @@
             <preferred-size width="256" height="256"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <gridColor color="-16777216"/>
+        </properties>
       </component>
       <component id="25d53" class="javax.swing.JComboBox" binding="DriverBox">
         <constraints>

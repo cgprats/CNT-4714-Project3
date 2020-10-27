@@ -8,13 +8,15 @@
 import java.sql.*;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javax.swing.*;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.xml.crypto.Data;
 import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 public class SQLClient {
     private JPanel Panel;
@@ -90,6 +92,7 @@ public class SQLClient {
                     dbMetaData = connection.getMetaData();
                     statement = connection.createStatement();
                     resultSet = statement.executeQuery(sqlCommand);
+                    ResultTable.setModel(buildTableModel(resultSet));
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     JOptionPane.showMessageDialog(null, throwables.getMessage(), "Database error", JOptionPane.ERROR_MESSAGE);
@@ -133,6 +136,25 @@ public class SQLClient {
                 ResultTable.setModel(new DefaultTableModel());
             }
         });
+    }
+
+    private TableModel buildTableModel(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData resultMetaData = resultSet.getMetaData();
+        int numColumns = resultMetaData.getColumnCount();
+        Vector<String> resultColumns = new Vector<String>();
+        for (int i = 1; i <= numColumns; i++) {
+            resultColumns.add(resultMetaData.getColumnName(i));
+        }
+        Vector<Vector<Object>> resultData = new Vector<Vector<Object>>();
+        while (resultSet.next()) {
+            Vector<Object> tempData = new Vector<Object>();
+            for (int i = 1; i <= numColumns; i++) {
+                tempData.add(resultSet.getObject(i));
+            }
+            resultData.add(tempData);
+        }
+        DefaultTableModel table = new DefaultTableModel(resultData, resultColumns);
+        return table;
     }
 
     public static void main(String[] args) {
@@ -181,6 +203,7 @@ public class SQLClient {
         final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
         Panel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 5, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         ResultTable = new JTable();
+        ResultTable.setGridColor(new Color(-16777216));
         Panel.add(ResultTable, new com.intellij.uiDesigner.core.GridConstraints(8, 0, 1, 5, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 256), new Dimension(256, 256), null, 0, false));
         DriverBox = new JComboBox();
         Panel.add(DriverBox, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
