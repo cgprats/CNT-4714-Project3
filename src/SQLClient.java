@@ -8,6 +8,7 @@
 import java.sql.*;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import javax.swing.*;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.crypto.Data;
 import javax.xml.transform.Result;
@@ -66,8 +67,10 @@ public class SQLClient {
                         }
                         try {
                             connection = DriverManager.getConnection(selectedDatabaseStr, username, password);
+                            ConnectionLabel.setText("Connected to " + selectedDatabaseStr);
                         } catch (SQLException throwables) {
                             throwables.printStackTrace();
+                            ConnectionLabel.setText("No Connection Now");
                         }
                         break;
                 }
@@ -89,6 +92,7 @@ public class SQLClient {
                     resultSet = statement.executeQuery(sqlCommand);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
+                    JOptionPane.showMessageDialog(null, throwables.getMessage(), "Database error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -104,9 +108,11 @@ public class SQLClient {
                     case 1:
                         DatabaseBox.removeAllItems();
                         DatabaseBox.addItem("");
+                        //Local MySQL Server
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/project3?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/bikedb?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://localhost:3306/testdb?useTimezone=true&serverTimezone=UTC");
+                        //Remote MySQL Server at MySQL.ChrisPrats.lan
                         DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/project3?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/bikedb?useTimezone=true&serverTimezone=UTC");
                         DatabaseBox.addItem("jdbc:mysql://MySQL.ChrisPrats.lan:3306/testdb?useTimezone=true&serverTimezone=UTC");
@@ -134,7 +140,7 @@ public class SQLClient {
         frame.setContentPane(new SQLClient().Panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setMinimumSize(new Dimension(1080, 480));
+        frame.setMinimumSize(new Dimension(1280, 640));
         frame.setVisible(true);
     }
 
@@ -154,12 +160,7 @@ public class SQLClient {
      */
     private void $$$setupUI$$$() {
         Panel = new JPanel();
-        Panel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(10, 12, new Insets(0, 0, 0, 0), -1, -1));
-        DatabaseInfoSection = new JLabel();
-        DatabaseInfoSection.setBackground(new Color(-16776961));
-        DatabaseInfoSection.setForeground(new Color(-16776961));
-        DatabaseInfoSection.setText("Enter Database Information");
-        Panel.add(DatabaseInfoSection, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 4, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        Panel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(10, 5, new Insets(0, 0, 0, 0), -1, -1));
         JDBCDriverLabel = new JLabel();
         JDBCDriverLabel.setText("JDBC Driver");
         Panel.add(JDBCDriverLabel, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -176,50 +177,59 @@ public class SQLClient {
         SQLExecutionWinLabel.setBackground(new Color(-16776961));
         SQLExecutionWinLabel.setForeground(new Color(-16776961));
         SQLExecutionWinLabel.setText("SQL Execution Result Window");
-        Panel.add(SQLExecutionWinLabel, new com.intellij.uiDesigner.core.GridConstraints(7, 0, 1, 6, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        Panel.add(SQLExecutionWinLabel, new com.intellij.uiDesigner.core.GridConstraints(7, 0, 1, 5, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_SOUTHWEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
         Panel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 5, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        ConnectButton = new JButton();
-        ConnectButton.setText("Connect to Database");
-        Panel.add(ConnectButton, new com.intellij.uiDesigner.core.GridConstraints(6, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(132, 30), null, 0, false));
-        ExecuteButton = new JButton();
-        ExecuteButton.setText("Execute SQL Command");
-        Panel.add(ExecuteButton, new com.intellij.uiDesigner.core.GridConstraints(6, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         ResultTable = new JTable();
-        Panel.add(ResultTable, new com.intellij.uiDesigner.core.GridConstraints(8, 0, 1, 11, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        Panel.add(ResultTable, new com.intellij.uiDesigner.core.GridConstraints(8, 0, 1, 5, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 256), new Dimension(256, 256), null, 0, false));
+        DriverBox = new JComboBox();
+        Panel.add(DriverBox, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
+        DatabaseBox = new JComboBox();
+        DatabaseBox.setInheritsPopupMenu(false);
+        DatabaseBox.setLightWeightPopupEnabled(true);
+        Panel.add(DatabaseBox, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
+        UsernameField = new JTextField();
+        Panel.add(UsernameField, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
+        PasswordField = new JPasswordField();
+        Font PasswordFieldFont = this.$$$getFont$$$(null, -1, -1, PasswordField.getFont());
+        if (PasswordFieldFont != null) PasswordField.setFont(PasswordFieldFont);
+        Panel.add(PasswordField, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
+        ClearButton = new JButton();
+        ClearButton.setText("Clear SQL Command");
+        Panel.add(ClearButton, new com.intellij.uiDesigner.core.GridConstraints(6, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(256, -1), new Dimension(256, -1), new Dimension(256, -1), 0, false));
+        SQLTextArea = new JTextArea();
+        Panel.add(SQLTextArea, new com.intellij.uiDesigner.core.GridConstraints(1, 2, 4, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(512, -1), new Dimension(512, 50), null, 0, false));
+        ClearResult = new JButton();
+        ClearResult.setText("Clear Result Window");
+        Panel.add(ClearResult, new com.intellij.uiDesigner.core.GridConstraints(9, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(256, -1), new Dimension(256, -1), new Dimension(256, -1), 0, false));
+        DatabaseInfoSection = new JLabel();
+        DatabaseInfoSection.setBackground(new Color(-16776961));
+        DatabaseInfoSection.setForeground(new Color(-16776961));
+        DatabaseInfoSection.setText("Enter Database Information");
+        Panel.add(DatabaseInfoSection, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.setBackground(new Color(-16777216));
         panel1.setForeground(new Color(-16777216));
-        Panel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(6, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        Panel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(6, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(256, -1), new Dimension(256, -1), new Dimension(256, -1), 0, false));
         ConnectionLabel = new JLabel();
         ConnectionLabel.setBackground(new Color(-65536));
         ConnectionLabel.setForeground(new Color(-65536));
         ConnectionLabel.setText("No Connection Now");
-        panel1.add(ConnectionLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        DriverBox = new JComboBox();
-        Panel.add(DriverBox, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        DatabaseBox = new JComboBox();
-        Panel.add(DatabaseBox, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        UsernameField = new JTextField();
-        Panel.add(UsernameField, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        PasswordField = new JPasswordField();
-        Font PasswordFieldFont = this.$$$getFont$$$(null, -1, -1, PasswordField.getFont());
-        if (PasswordFieldFont != null) PasswordField.setFont(PasswordFieldFont);
-        Panel.add(PasswordField, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        ClearButton = new JButton();
-        ClearButton.setText("Clear SQL Command");
-        Panel.add(ClearButton, new com.intellij.uiDesigner.core.GridConstraints(6, 2, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(ConnectionLabel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(256, -1), new Dimension(256, -1), new Dimension(256, -1), 0, false));
+        ConnectButton = new JButton();
+        ConnectButton.setText("Connect to Database");
+        Panel.add(ConnectButton, new com.intellij.uiDesigner.core.GridConstraints(6, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(384, -1), new Dimension(384, 30), new Dimension(384, -1), 0, false));
         SQLCommandSection = new JLabel();
         SQLCommandSection.setBackground(new Color(-16776961));
         SQLCommandSection.setForeground(new Color(-16776961));
         SQLCommandSection.setText("Enter an SQL Command");
-        Panel.add(SQLCommandSection, new com.intellij.uiDesigner.core.GridConstraints(0, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        SQLTextArea = new JTextArea();
-        Panel.add(SQLTextArea, new com.intellij.uiDesigner.core.GridConstraints(1, 4, 4, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        ClearResult = new JButton();
-        ClearResult.setText("Clear Result Window");
-        Panel.add(ClearResult, new com.intellij.uiDesigner.core.GridConstraints(9, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        Panel.add(SQLCommandSection, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 3, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        ExecuteButton = new JButton();
+        ExecuteButton.setText("Execute SQL Command");
+        Panel.add(ExecuteButton, new com.intellij.uiDesigner.core.GridConstraints(6, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, new Dimension(256, -1), new Dimension(256, -1), new Dimension(256, -1), 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
+        Panel.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(6, 4, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**
@@ -247,5 +257,6 @@ public class SQLClient {
     public JComponent $$$getRootComponent$$$() {
         return Panel;
     }
+
 
 }
