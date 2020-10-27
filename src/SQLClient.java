@@ -92,7 +92,6 @@ public class SQLClient {
                     dbMetaData = connection.getMetaData();
                     statement = connection.createStatement();
                     resultSet = statement.executeQuery(sqlCommand);
-                    ResultTable.setModel(buildTableModel(resultSet));
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     JOptionPane.showMessageDialog(null, throwables.getMessage(), "Database error", JOptionPane.ERROR_MESSAGE);
@@ -136,25 +135,6 @@ public class SQLClient {
                 ResultTable.setModel(new DefaultTableModel());
             }
         });
-    }
-
-    private TableModel buildTableModel(ResultSet resultSet) throws SQLException {
-        ResultSetMetaData resultMetaData = resultSet.getMetaData();
-        int numColumns = resultMetaData.getColumnCount();
-        Vector<String> resultColumns = new Vector<String>();
-        for (int i = 1; i <= numColumns; i++) {
-            resultColumns.add(resultMetaData.getColumnName(i));
-        }
-        Vector<Vector<Object>> resultData = new Vector<Vector<Object>>();
-        while (resultSet.next()) {
-            Vector<Object> tempData = new Vector<Object>();
-            for (int i = 1; i <= numColumns; i++) {
-                tempData.add(resultSet.getObject(i));
-            }
-            resultData.add(tempData);
-        }
-        DefaultTableModel table = new DefaultTableModel(resultData, resultColumns);
-        return table;
     }
 
     public static void main(String[] args) {
