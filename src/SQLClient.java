@@ -94,7 +94,8 @@ public class SQLClient {
                 try {
                     dbMetaData = connection.getMetaData();
                     statement = connection.createStatement(resultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    resultSet = statement.executeQuery(sqlCommand);
+                    statement.execute(sqlCommand);
+                    resultSet = statement.getResultSet();
                     resultSetMetaData = resultSet.getMetaData();
                     sqlQueryResultTable = new QueryResultTable(connection, statement, resultSet, resultSetMetaData);
                     ResultTable = new JTable(sqlQueryResultTable);
